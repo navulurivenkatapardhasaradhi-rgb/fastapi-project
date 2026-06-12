@@ -2,7 +2,10 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import FileResponse
 import os, shutil
 
-from utils.security import admin_only
+from utils.security import (
+    get_current_user,
+    admin_only
+)
 from models.users import User
 
 router = APIRouter(prefix="/files", tags=["File Upload"])
@@ -13,7 +16,7 @@ ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"]
 
 # ✅ UPLOAD FILE
 @router.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), current_user: User = Depends(admin_only)):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
     # 🔒 Validate file type
@@ -41,14 +44,14 @@ async def upload_file(file: UploadFile = File(...)):
 
 # ✅ LIST FILES
 @router.get("/")
-async def get_files():
+async def get_files(current_user: User = Depends(admin_only)):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     return {"files": os.listdir(UPLOAD_DIR)}
 
 
 # ✅ GET SINGLE FILE
 @router.get("/file/{name}")
-async def get_file(name: str):
+async def get_file(name: str, current_user: User = Depends(admin_only)):
     file_path = os.path.join(UPLOAD_DIR, name)
 
     if not os.path.exists(file_path):

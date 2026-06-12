@@ -35,11 +35,7 @@ router = APIRouter(
     prefix="/products",
     tags=["Products"]
 )
-
-
-# =========================================================
 # CREATE PRODUCT (ADMIN ONLY)
-# =========================================================
 @router.post(
     "/",
     response_model=ProductResponse,
@@ -48,9 +44,7 @@ router = APIRouter(
 async def create_product(
     payload: ProductCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        admin_only
-    )
+    admin: User = Depends(admin_only)
 ):
 
     existing = await db.execute(
@@ -85,15 +79,14 @@ async def create_product(
     return new_product
 
 
-# =========================================================
 # GET ALL PRODUCTS
-# =========================================================
 @router.get(
     "/",
     response_model=ProductListResponse
 )
 async def get_products(
     db: AsyncSession = Depends(get_db),
+    admin: User = Depends(admin_only),
     limit: int = Query(10, ge=1, le=100),
     offset: int = Query(0, ge=0),
     name: str | None = None,
@@ -163,17 +156,15 @@ async def get_products(
         "data": products
     }
 
-
-# =========================================================
 # GET PRODUCT BY ID
-# =========================================================
 @router.get(
     "/{id}",
     response_model=ProductResponse
 )
 async def get_product(
     id: int,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(admin_only)
 ):
 
     result = await db.execute(
@@ -193,9 +184,7 @@ async def get_product(
     return product
 
 
-# =========================================================
 # UPDATE PRODUCT (ADMIN ONLY)
-# =========================================================
 @router.put(
     "/{id}",
     response_model=ProductResponse
@@ -204,9 +193,7 @@ async def update_product(
     id: int,
     payload: ProductCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        admin_only
-    )
+    admin: User = Depends(admin_only)
 ):
 
     result = await db.execute(
@@ -234,22 +221,15 @@ async def update_product(
     await db.refresh(db_product)
 
     return db_product
-
-
-# =========================================================
 # PATCH PRODUCT (ADMIN ONLY)
-# =========================================================
-@router.patch(
-    "/{id}",
+@router.patch("/{id}",
     response_model=ProductResponse
 )
 async def patch_product(
     id: int,
     payload: ProductUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        admin_only
-    )
+    admin: User = Depends(admin_only)
 ):
 
     result = await db.execute(
@@ -289,9 +269,7 @@ async def patch_product(
     return db_product
 
 
-# =========================================================
 # DELETE PRODUCT (ADMIN ONLY)
-# =========================================================
 @router.delete(
     "/{id}",
     response_model=MessageResponse
@@ -299,9 +277,7 @@ async def patch_product(
 async def delete_product(
     id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        admin_only
-    )
+    admin: User = Depends(admin_only)
 ):
 
     result = await db.execute(
