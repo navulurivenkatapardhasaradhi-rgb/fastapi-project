@@ -14,18 +14,18 @@ UPLOAD_DIR = "uploads"
 ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf"]
 
 
-# ✅ UPLOAD FILE
+#  UPLOAD FILE
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...), current_user: User = Depends(admin_only)):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-    # 🔒 Validate file type
+    #  Validate file type
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail="Only images and PDFs allowed")
 
     file_path = os.path.join(UPLOAD_DIR, file.filename)
 
-    # ⚠️ Prevent overwrite
+    #  Prevent overwrite
     if os.path.exists(file_path):
         raise HTTPException(status_code=400, detail="File already exists")
 
@@ -42,14 +42,14 @@ async def upload_file(file: UploadFile = File(...), current_user: User = Depends
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ✅ LIST FILES
+#  LIST FILES
 @router.get("/")
 async def get_files(current_user: User = Depends(admin_only)):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     return {"files": os.listdir(UPLOAD_DIR)}
 
 
-# ✅ GET SINGLE FILE
+#  GET SINGLE FILE
 @router.get("/file/{name}")
 async def get_file(name: str, current_user: User = Depends(admin_only)):
     file_path = os.path.join(UPLOAD_DIR, name)
@@ -60,7 +60,7 @@ async def get_file(name: str, current_user: User = Depends(admin_only)):
     return FileResponse(file_path)
 
 
-# 🔐 DELETE FILE (ADMIN ONLY)
+#  DELETE FILE (ADMIN ONLY)
 @router.delete("/file/{name}")
 async def delete_file(
     name: str,

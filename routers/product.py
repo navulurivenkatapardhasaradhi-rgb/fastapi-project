@@ -36,11 +36,7 @@ router = APIRouter(
     tags=["Products"]
 )
 # CREATE PRODUCT (ADMIN ONLY)
-@router.post(
-    "/",
-    response_model=ProductResponse,
-    status_code=status.HTTP_201_CREATED
-)
+@router.post("/",response_model=ProductResponse,status_code=status.HTTP_201_CREATED)
 async def create_product(
     payload: ProductCreate,
     db: AsyncSession = Depends(get_db),
@@ -80,10 +76,7 @@ async def create_product(
 
 
 # GET ALL PRODUCTS
-@router.get(
-    "/",
-    response_model=ProductListResponse
-)
+@router.get("/",response_model=ProductListResponse)
 async def get_products(
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(admin_only),
@@ -185,10 +178,7 @@ async def get_product(
 
 
 # UPDATE PRODUCT (ADMIN ONLY)
-@router.put(
-    "/{id}",
-    response_model=ProductResponse
-)
+@router.put("/{id}",response_model=ProductResponse)
 async def update_product(
     id: int,
     payload: ProductCreate,
@@ -222,9 +212,7 @@ async def update_product(
 
     return db_product
 # PATCH PRODUCT (ADMIN ONLY)
-@router.patch("/{id}",
-    response_model=ProductResponse
-)
+@router.patch("/{id}",response_model=ProductResponse)
 async def patch_product(
     id: int,
     payload: ProductUpdate,
@@ -270,10 +258,7 @@ async def patch_product(
 
 
 # DELETE PRODUCT (ADMIN ONLY)
-@router.delete(
-    "/{id}",
-    response_model=MessageResponse
-)
+@router.delete("/{id}",response_model=MessageResponse)
 async def delete_product(
     id: int,
     db: AsyncSession = Depends(get_db),

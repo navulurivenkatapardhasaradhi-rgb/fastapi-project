@@ -13,7 +13,7 @@ from utils.security import get_current_user, admin_only
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 
-# ✅ GET ALL TASKS
+# GET ALL TASKS
 @router.get("/")
 async def get_all(
     db: AsyncSession = Depends(get_db),
@@ -25,7 +25,7 @@ async def get_all(
     return result.scalars().all()
 
 
-# ✅ GET ONE TASK
+#  GET ONE TASK
 @router.get("/{id}")
 async def get_one(
     id: int,
@@ -46,7 +46,7 @@ async def get_one(
     return obj
 
 
-# ✅ CREATE TASK
+#  CREATE TASK
 @router.post("/")
 async def create(
     task: TaskCreate,
@@ -66,15 +66,13 @@ async def create(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ✅ REPLACE TASK (PUT)
+#  REPLACE TASK (PUT)
 @router.put("/{id}")
 async def replace(
     id: int,
     task: TaskCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        admin_only
-    )
+    current_user: User = Depends(admin_only)
 ):
     result = await db.execute(
         select(Task).where(Task.id == id)
@@ -99,7 +97,7 @@ async def replace(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ✅ PATCH UPDATE TASK
+#  PATCH UPDATE TASK
 @router.patch("/{id}")
 async def update(
     id: int,
@@ -135,7 +133,7 @@ async def update(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ✅ DELETE TASK
+#  DELETE TASK
 @router.delete("/{id}")
 async def delete(
     id: int,
