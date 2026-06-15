@@ -23,8 +23,6 @@ async def create(
     except Exception as e:
         await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
-
-
 @router.get("/")
 async def get_all(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Blog))
