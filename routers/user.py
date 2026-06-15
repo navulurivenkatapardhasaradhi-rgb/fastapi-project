@@ -204,7 +204,6 @@ async def profile(
 # GET ALL USERS 
 @router.get("/")
 async def get_users(
-    admin: User = Depends(admin_only),
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(select(User))

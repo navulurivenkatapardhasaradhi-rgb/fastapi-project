@@ -14,7 +14,8 @@ PUBLIC_PATHS = [
     "/users/verify-otp",
     "/users/resend-otp",
     "/users/forgot-password",
-    "/users/reset-password"
+    "/users/reset-password",
+    "/users/"
 ]
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):

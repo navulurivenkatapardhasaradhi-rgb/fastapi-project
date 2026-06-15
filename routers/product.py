@@ -56,7 +56,6 @@ async def create_product(
             status_code=400,
             detail="Product already exists"
         )
-
     new_product = Product(
         name=payload.name,
         description=payload.description,
