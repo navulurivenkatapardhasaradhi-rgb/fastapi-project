@@ -147,7 +147,7 @@ async def update_product(
         select(Product).where(
             Product.id == id
         )
-    )
+    ) 
     db_product = result.scalar_one_or_none()
     if not db_product:
         raise HTTPException(
