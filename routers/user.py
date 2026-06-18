@@ -48,7 +48,7 @@ async def register(
     db: AsyncSession = Depends(get_db)
 ):
     existing = await db.execute(
-        select(User).where(User.email == payload.email)
+        select(User).where(User.email.lower() == payload.email.lower())
     )
     if existing.scalar_one_or_none():
         raise HTTPException(
@@ -58,7 +58,7 @@ async def register(
     otp = generate_otp()
     new_user = User(
         name=payload.name,
-        email=payload.email,
+        email=payload.email.lower(),
         hashed_password=hash_password(payload.password),
         role=payload.role.lower(),
         is_verified=False,
@@ -70,7 +70,7 @@ async def register(
     await db.commit()
     background_tasks.add_task(
         send_email,
-        payload.email,
+        payload.email.lower(),
         "Verify your email",
         build_otp_body(payload.name, otp),
     )
@@ -83,7 +83,7 @@ async def verify_otp(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email == payload.email)
+        select(User).where(User.email.lower() == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -124,7 +124,7 @@ async def resend_otp(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email == payload.email)
+        select(User).where(User.email.lower() == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -145,7 +145,7 @@ async def resend_otp(
     await db.commit()
     background_tasks.add_task(
         send_email,
-        user.email,
+        user.email.lower(),
         "Your new verification OTP",
         build_otp_body(user.name, otp),
     )
@@ -160,7 +160,7 @@ async def login(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email == payload.email)
+        select(User).where(User.email.lower() == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -248,7 +248,7 @@ async def update_user(
         )
     if payload.email:
         existing = await db.execute(
-            select(User).where(User.email == payload.email)
+            select(User).where(User.email.lower() == payload.email.lower())
         )
         existing_user = existing.scalar_one_or_none()
         if existing_user and existing_user.id != id:
@@ -256,7 +256,7 @@ async def update_user(
                 status_code=400,
                 detail="Email already exists"
             )
-        db_user.email = payload.email
+        db_user.email = payload.email.lower()
     if payload.password:
         db_user.hashed_password = hash_password(
             payload.password
@@ -293,7 +293,7 @@ async def forgot_password(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email == payload.email)
+        select(User).where(User.email.lower() == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -309,7 +309,7 @@ async def forgot_password(
     await db.commit()
     background_tasks.add_task(
         send_email,
-        user.email,
+        user.email.lower(),
         "Password reset OTP",
         build_reset_body(user.name, otp),
     )
@@ -322,7 +322,7 @@ async def reset_password(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email == payload.email)
+        select(User).where(User.email.lower() == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
