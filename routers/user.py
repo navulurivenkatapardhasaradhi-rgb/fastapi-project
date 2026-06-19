@@ -48,7 +48,7 @@ async def register(
     db: AsyncSession = Depends(get_db)
 ):
     existing = await db.execute(
-        select(User).where(User.email.lower() == payload.email.lower())
+        select(User).where(User.email == payload.email.lower())
     )
     if existing.scalar_one_or_none():
         raise HTTPException(
@@ -83,7 +83,7 @@ async def verify_otp(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email.lower() == payload.email.lower())
+        select(User).where(User.email == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -124,7 +124,7 @@ async def resend_otp(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email.lower() == payload.email.lower())
+        select(User).where(User.email == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -160,7 +160,7 @@ async def login(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email.lower() == payload.email.lower())
+        select(User).where(User.email == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -248,7 +248,7 @@ async def update_user(
         )
     if payload.email:
         existing = await db.execute(
-            select(User).where(User.email.lower() == payload.email.lower())
+            select(User).where(User.email == payload.email.lower())
         )
         existing_user = existing.scalar_one_or_none()
         if existing_user and existing_user.id != id:
@@ -293,7 +293,7 @@ async def forgot_password(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email.lower() == payload.email.lower())
+        select(User).where(User.email == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
@@ -322,7 +322,7 @@ async def reset_password(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(User).where(User.email.lower() == payload.email.lower())
+        select(User).where(User.email == payload.email.lower())
     )
     user = result.scalar_one_or_none()
     if not user:
